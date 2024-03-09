@@ -12,9 +12,10 @@ import math
 class TrainDataset(Dataset):
     def __init__(self):
         self.random_flip = True
-        self.length = len(glob.glob('/home/ecust/lhq/smoke/training_data/blendall/*'))
+        #self.length = len(glob.glob('/home/ecust/lhq/smoke/training_data/blendall/*'))
+        self.length = len(glob.glob('/local/scratch/eve/SmokeSegmentationDatasets/training_data/blendall/*'))
         # this path is the data directory, you can change it for your need.
-        self.root_path = '/home/ecust/lhq/smoke/training_data/'
+        self.root_path = '/local/scratch/eve/SmokeSegmentationDatasets/training_data/'
         # assert args.mask, "Missing mask as the input"
         # assert args.normalization, "You need to do the data normalization before training"
 
@@ -49,7 +50,8 @@ class TestDataset(Dataset):
     def __init__(self):
         #self.length = len(glob.glob('/home/ecust/lhq/smoke/8/*'))
         # this path is the data directory, you can change it for your need.
-        self.root_path = '/home/ecust/lhq/0/'
+        #self.root_path = '/home/ecust/lhq/0/'
+        self.root_path = '/local/scratch/eve/SmokeSegmentationDatasets/DS01/'
         #self.root_path = '/home/ecust/lhq/smoke/testing_data/'
         # assert args.mask, "Missing mask as the input"
         # assert args.normalization, "You need to do the data normalization before training"
@@ -65,13 +67,24 @@ class TestDataset(Dataset):
         # label=cv2.resize(label, (256, 256))
         # label=np.where(label==0, 0,1)
         # im = im.transpose(2, 0, 1)
-        im = cv2.cvtColor(cv2.imread(self.root_path+'pic/'+str(idx+1) + '.png'),cv2.COLOR_BGR2RGB)
-        label = cv2.imread(self.root_path+'cv2_mask/'+str(idx+1) + '.png', cv2.IMREAD_GRAYSCALE)
+        #im = cv2.cvtColor(cv2.imread(self.root_path+'pic/'+str(idx+1) + '.png'),cv2.COLOR_BGR2RGB)
+        #label = cv2.imread(self.root_path+'cv2_mask/'+str(idx+1) + '.png', cv2.IMREAD_GRAYSCALE)
+        img_name = self.index_to_string(idx)
+        
+        # My paths are different from the original code -- without thresholding what happens?
+        im = cv2.cvtColor(cv2.imread(self.root_path+ img_name + '.png'),cv2.COLOR_BGR2RGB)
+        label = cv2.imread(self.root_path+ img_name + 'Alpha.png', cv2.IMREAD_GRAYSCALE)
         label = np.where(label == 0, 0, 1)
         im = im.transpose(2, 0, 1)
         # images shape: 3 x H x W
         # labels shape: H x W
         sample = {'images': im, 'labels': label}
         return sample
+    
+    def index_to_string(self, idx):
+        number = str(idx+1)
+        return number.zfill(4)
+    
+
 
 
